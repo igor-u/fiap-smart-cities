@@ -31,7 +31,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -51,7 +53,7 @@ fun MenuScreen() {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(Color.Blue)
+                    .background(color = colorResource(id = R.color.azul_escuro))
                     .padding(top = 54.dp)
                     .padding(bottom = 27.dp)
                     .padding(horizontal = 36.dp),
@@ -68,21 +70,17 @@ fun MenuScreen() {
                 Row(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
+                    Text("Nome",
+                        modifier = Modifier.padding(end = 12.dp),
+                        color = Color.White)
+
                     Image(
                         painter = painterResource(id = R.drawable.user),
                         contentDescription = "Ícone do usuário",
                         Modifier
                             .size(48.dp)
-                            .padding(end = 0.dp)
                     )
 
-                    Image(
-                        painter = painterResource(id = R.drawable.options),
-                        contentDescription = "Ícone de opções",
-                        Modifier
-                            .size(24.dp)
-                            .padding(start = 18.dp)
-                    )
                 }
             }
             Column(
@@ -91,10 +89,12 @@ fun MenuScreen() {
                     .background(Color.White)
             ) {
 
-                Text("Meus documentos",
+                Text(
+                    "Meus documentos",
                     fontFamily = quickSandSemibold,
                     fontSize = 24.sp,
-                    modifier = Modifier.padding(16.dp))
+                    modifier = Modifier.padding(24.dp)
+                )
 
                 Column(
                     modifier = Modifier
@@ -103,18 +103,20 @@ fun MenuScreen() {
                 ) {
 
                     Box(modifier = Modifier.fillMaxWidth()) {
-                        CardMaker("RG", Color.Blue, 0.dp)
-                        CardMaker("CNH", Color.Yellow, 72.dp)
-                        CardMaker("RCN", Color.Green, 144.dp)
+                        CardMaker("RG", colorResource(id = R.color.azul_escuro), 0.dp)
+                        CardMaker("CNH", colorResource(id = R.color.verde_escuro), 72.dp)
+                        CardMaker("RCN", colorResource(id = R.color.amarelo_escuro), 144.dp)
                     }
-                    }
+                }
 
-                Text("Validações",
+                Text(
+                    "Validações recentes",
                     fontFamily = quickSandSemibold,
                     fontSize = 24.sp,
-                    modifier = Modifier.padding(16.dp))
+                    modifier = Modifier.padding(24.dp)
+                )
 
-                TableScreen()
+                TabelaValidacoes()
 
             }
         }
@@ -133,11 +135,13 @@ fun CardMaker(name: String, color: Color, dp: Dp) {
         elevation = CardDefaults.cardElevation(4.dp),
         shape = RoundedCornerShape(36.dp)
     ) {
-        Text(name,
+        Text(
+            name,
             fontFamily = quickSandSemibold,
             fontSize = 24.sp,
             color = Color.White,
-            modifier = Modifier.padding(12.dp))
+            modifier = Modifier.padding(12.dp)
+        )
 
     }
 }
@@ -152,14 +156,16 @@ fun RowScope.TableCell(
             text = content,
             Modifier
                 .weight(weight)
-                .padding(8.dp))
+                .padding(vertical = 8.dp),
+            textAlign = TextAlign.Center
+        )
 
         is Painter -> Icon(
             painter = content,
             contentDescription = "Ícone de informações",
             Modifier
                 .size(36.dp)
-                .weight(weight)
+                .weight(0.125f)
                 .padding(8.dp)
         )
     }
@@ -167,29 +173,30 @@ fun RowScope.TableCell(
 }
 
 @Composable
-fun TableScreen() {
-    val tableData = (1..10).mapIndexed { index, item ->
-        index to "Item $index"
-    }
+fun TabelaValidacoes() {
+    val tableData = (1..9).mapIndexed { index, _ ->
+        (index + 1) to "Doc $index"
+    }.asReversed()
     val columnWeight = .25f
     LazyColumn(
         Modifier
-            .fillMaxSize()) {
+            .fillMaxSize()
+    ) {
         item {
             Row() {
-                TableCell("", columnWeight)
+                TableCell("", 0.125f)
                 TableCell("Data", columnWeight)
-                TableCell("Nome", columnWeight)
+                TableCell("Documento", columnWeight)
                 TableCell("Local", columnWeight)
             }
         }
         items(tableData) {
-            val (id, text) = it
+            val (id) = it
             Row(Modifier.fillMaxWidth()) {
                 TableCell(painterResource(id = R.drawable.info), columnWeight)
-                TableCell(id.toString(), columnWeight)
-                TableCell(text, columnWeight)
-                TableCell(text, columnWeight)
+                TableCell("0$id/08/2024", columnWeight)
+                TableCell("Doc $id", columnWeight)
+                TableCell("--------", columnWeight)
             }
         }
     }

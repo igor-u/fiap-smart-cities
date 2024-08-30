@@ -2,23 +2,23 @@ package br.com.fiap.myapp.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import br.com.fiap.myapp.ui.theme.MyAppTheme
@@ -53,7 +53,8 @@ fun StartingScreen(navController: NavController) {
                 },
                 modifier = Modifier
                     .padding(top = 64.dp)
-                    .fillMaxWidth(0.5f)
+                    .fillMaxWidth(0.5f),
+                colors = ButtonDefaults.buttonColors(colorResource(id = R.color.azul_escuro))
             ) {
                 Text(
                     buildAnnotatedString {
@@ -76,7 +77,8 @@ fun StartingScreen(navController: NavController) {
                 },
                 modifier = Modifier
                     .padding(top = 64.dp)
-                    .fillMaxWidth(0.5f)
+                    .fillMaxWidth(0.5f),
+                colors = ButtonDefaults.buttonColors(colorResource(id = R.color.azul_escuro))
             ) {
                 Text(
                     "Criar conta",

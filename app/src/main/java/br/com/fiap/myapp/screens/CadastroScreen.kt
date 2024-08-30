@@ -13,6 +13,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -31,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import br.com.fiap.myapp.ui.theme.MyAppTheme
 import br.com.fiap.myapp.ui.theme.quickSandSemibold
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.navigation.NavController
@@ -73,7 +75,8 @@ fun CadastroScreen(navController: NavController) {
                 },
                 modifier = Modifier
                     .padding(top = 48.dp)
-                    .fillMaxWidth(0.5f)
+                    .fillMaxWidth(0.5f),
+                colors = ButtonDefaults.buttonColors(colorResource(id = R.color.azul_escuro))
             ) {
                 Text(
                     "Continuar",
