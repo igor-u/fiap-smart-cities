@@ -5,6 +5,11 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.draggable
+import androidx.compose.foundation.gestures.rememberDraggableState
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,13 +24,20 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -38,6 +50,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
 import br.com.fiap.myapp.R
 import br.com.fiap.myapp.ui.theme.MyAppTheme
@@ -48,7 +61,7 @@ import br.com.fiap.myapp.ui.theme.quickSandSemibold
 @Composable
 fun MenuScreen() {
     MyAppTheme {
-        Column(modifier = Modifier.fillMaxSize()) {
+        Column {
 
             Row(
                 modifier = Modifier
@@ -70,9 +83,11 @@ fun MenuScreen() {
                 Row(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text("Nome",
+                    Text(
+                        "Nome",
                         modifier = Modifier.padding(end = 12.dp),
-                        color = Color.White)
+                        color = Color.White
+                    )
 
                     Image(
                         painter = painterResource(id = R.drawable.user),
@@ -102,10 +117,13 @@ fun MenuScreen() {
                         .padding(horizontal = 32.dp)
                 ) {
 
-                    Box(modifier = Modifier.fillMaxWidth()) {
-                        CardMaker("RG", colorResource(id = R.color.azul_escuro), 0.dp)
-                        CardMaker("CNH", colorResource(id = R.color.verde_escuro), 72.dp)
-                        CardMaker("RCN", colorResource(id = R.color.amarelo_escuro), 144.dp)
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                    ) {
+                        CardMaker("RG", colorResource(id = R.color.azul_escuro), 0f)
+                        CardMaker("CNH", colorResource(id = R.color.verde_escuro), 72f)
+                        CardMaker("RCN", colorResource(id = R.color.amarelo_escuro), 144f)
                     }
                 }
 
@@ -124,24 +142,60 @@ fun MenuScreen() {
 }
 
 @Composable
-fun CardMaker(name: String, color: Color, dp: Dp) {
+fun CardMaker(name: String, color: Color, cardOffset: Float) {
+    var cardPosition by remember { mutableFloatStateOf(cardOffset) }
+    val draggableState = rememberDraggableState { delta ->
+        cardPosition += delta
+    }
+
+    var height by remember { mutableStateOf(180.dp) }
+    var width by remember { mutableStateOf(180.dp) }
+    var zIndex by remember { mutableFloatStateOf(0f) }
+
     Card(
         modifier = Modifier
-            .height(180.dp)
-            .width(360.dp)
-            .padding(start = dp),
+            .height(height)
+            .width(width)
+            .offset(x = cardPosition.dp)
+            .clickable {
+                if (height == 180.dp) {
+                    height = 480.dp
+                    width = 360.dp
+                    zIndex = 2f
+
+                } else {
+                    height = 180.dp
+                    width = 180.dp
+                    zIndex = 0f
+                }
+            }
+            .zIndex(zIndex)
+            .draggable(
+                state = draggableState,
+                orientation = Orientation.Horizontal,
+            ),
         colors = CardDefaults
             .cardColors(containerColor = color),
         elevation = CardDefaults.cardElevation(4.dp),
-        shape = RoundedCornerShape(36.dp)
+        shape = RoundedCornerShape(36.dp),
     ) {
-        Text(
-            name,
-            fontFamily = quickSandSemibold,
-            fontSize = 24.sp,
-            color = Color.White,
-            modifier = Modifier.padding(12.dp)
-        )
+        Row(modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween) {
+            Text(
+                name,
+                fontFamily = quickSandSemibold,
+                fontSize = 24.sp,
+                color = Color.White,
+                modifier = Modifier.padding(12.dp)
+            )
+
+            Image(
+                painter = painterResource(id = R.drawable.nfc),
+                contentDescription = "Ícone de NFC",
+                Modifier.padding(6.dp)
+                    .size(48.dp)
+            )
+        }
 
     }
 }
