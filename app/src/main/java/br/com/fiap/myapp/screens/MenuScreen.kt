@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -43,6 +44,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
@@ -144,13 +146,16 @@ fun MenuScreen() {
 @Composable
 fun CardMaker(name: String, color: Color, cardOffset: Float) {
     var cardPosition by remember { mutableFloatStateOf(cardOffset) }
-    val draggableState = rememberDraggableState { delta ->
-        cardPosition += delta
-    }
 
+
+    val screenWidth = LocalConfiguration.current.screenWidthDp
     var height by remember { mutableStateOf(180.dp) }
     var width by remember { mutableStateOf(180.dp) }
     var zIndex by remember { mutableFloatStateOf(0f) }
+
+    val draggableState = rememberDraggableState { delta ->
+        cardPosition = (cardPosition + delta).coerceIn(-32f, (screenWidth - width.value - 32))
+    }
 
     Card(
         modifier = Modifier
@@ -159,9 +164,10 @@ fun CardMaker(name: String, color: Color, cardOffset: Float) {
             .offset(x = cardPosition.dp)
             .clickable {
                 if (height == 180.dp) {
-                    height = 480.dp
+                    height = 420.dp
                     width = 360.dp
                     zIndex = 2f
+                    cardPosition = screenWidth/2 - width.value/2 - 25
 
                 } else {
                     height = 180.dp
@@ -170,10 +176,14 @@ fun CardMaker(name: String, color: Color, cardOffset: Float) {
                 }
             }
             .zIndex(zIndex)
-            .draggable(
-                state = draggableState,
-                orientation = Orientation.Horizontal,
-            ),
+            .then(if (height == 180.dp) { // draggable
+                Modifier.draggable(
+                    state = draggableState,
+                    orientation = Orientation.Horizontal
+                )
+            } else {
+                Modifier // not draggable
+            }),
         colors = CardDefaults
             .cardColors(containerColor = color),
         elevation = CardDefaults.cardElevation(4.dp),
@@ -235,6 +245,7 @@ fun TabelaValidacoes() {
     LazyColumn(
         Modifier
             .fillMaxSize()
+            .padding(bottom = 56.dp)
     ) {
         item {
             Row() {
