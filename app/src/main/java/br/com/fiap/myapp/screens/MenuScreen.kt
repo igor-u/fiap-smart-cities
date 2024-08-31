@@ -1,21 +1,16 @@
 package br.com.fiap.myapp.screens
 
-import android.graphics.drawable.Drawable
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.draggable
 import androidx.compose.foundation.gestures.rememberDraggableState
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -25,15 +20,13 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -43,22 +36,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
-import androidx.navigation.NavController
 import br.com.fiap.myapp.R
 import br.com.fiap.myapp.ui.theme.MyAppTheme
 import br.com.fiap.myapp.ui.theme.quickSandBold
-import br.com.fiap.myapp.ui.theme.quickSandRegular
 import br.com.fiap.myapp.ui.theme.quickSandSemibold
+import kotlinx.coroutines.delay
 
 @Composable
 fun MenuScreen() {
@@ -122,10 +112,11 @@ fun MenuScreen() {
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
+                            .align(alignment = Alignment.CenterHorizontally)
                     ) {
-                        CardMaker("RG", colorResource(id = R.color.azul_escuro), 0f)
-                        CardMaker("CNH", colorResource(id = R.color.verde_escuro), 72f)
-                        CardMaker("RCN", colorResource(id = R.color.amarelo_escuro), 144f)
+                        CardMaker("CPF", colorResource(id = R.color.azul_escuro), 0f)
+                        CardMaker("CNH", colorResource(id = R.color.verde_escuro), 66f)
+                        CardMaker("RCN", colorResource(id = R.color.amarelo_escuro), 132f)
                     }
                 }
 
@@ -150,14 +141,18 @@ fun CardMaker(name: String, color: Color, cardOffset: Float) {
 
     val screenWidth = LocalConfiguration.current.screenWidthDp
     var height by remember { mutableStateOf(180.dp) }
-    var width by remember { mutableStateOf(180.dp) }
+    var width by remember { mutableStateOf(196.dp) }
     var zIndex by remember { mutableFloatStateOf(0f) }
+    var isExpanded by remember { mutableStateOf(false) }
 
     val draggableState = rememberDraggableState { delta ->
         cardPosition = (cardPosition + delta).coerceIn(-32f, (screenWidth - width.value - 32))
     }
 
+    //ValidaDocumento(isExpanded)
+
     Card(
+
         modifier = Modifier
             .height(height)
             .width(width)
@@ -167,23 +162,27 @@ fun CardMaker(name: String, color: Color, cardOffset: Float) {
                     height = 420.dp
                     width = 360.dp
                     zIndex = 2f
-                    cardPosition = screenWidth/2 - width.value/2 - 25
+                    cardPosition = screenWidth / 2 - width.value / 2 - 25
+                    isExpanded = true
 
                 } else {
                     height = 180.dp
-                    width = 180.dp
+                    width = 196.dp
                     zIndex = 0f
+                    isExpanded = false
                 }
             }
             .zIndex(zIndex)
-            .then(if (height == 180.dp) { // draggable
-                Modifier.draggable(
-                    state = draggableState,
-                    orientation = Orientation.Horizontal
-                )
-            } else {
-                Modifier // not draggable
-            }),
+            .then(
+                if (height == 180.dp) { // draggable
+                    Modifier.draggable(
+                        state = draggableState,
+                        orientation = Orientation.Horizontal
+                    )
+                } else {
+                    Modifier // not draggable
+                }
+            ),
         colors = CardDefaults
             .cardColors(containerColor = color),
         elevation = CardDefaults.cardElevation(4.dp),
@@ -202,10 +201,13 @@ fun CardMaker(name: String, color: Color, cardOffset: Float) {
             Image(
                 painter = painterResource(id = R.drawable.nfc),
                 contentDescription = "Ícone de NFC",
-                Modifier.padding(6.dp)
+                Modifier
+                    .padding(6.dp)
                     .size(48.dp)
             )
         }
+
+        ValidaDocumento(isExpanded)
 
     }
 }
@@ -248,7 +250,7 @@ fun TabelaValidacoes() {
             .padding(bottom = 56.dp)
     ) {
         item {
-            Row() {
+            Row {
                 TableCell("", 0.125f)
                 TableCell("Data", columnWeight)
                 TableCell("Documento", columnWeight)
@@ -264,6 +266,49 @@ fun TabelaValidacoes() {
                 TableCell("--------", columnWeight)
             }
         }
+    }
+}
+
+@Composable
+fun ValidaDocumento(isExpanded: Boolean) {
+
+    var texto by remember { mutableStateOf("Validando...") }
+    val screenWidth = LocalConfiguration.current.screenWidthDp
+    var isValido by remember { mutableStateOf(false) }
+
+    if (isExpanded) {
+
+            Box(
+                modifier = Modifier
+                    .padding(top = 24.dp)
+                    .width(screenWidth.dp)
+                    .height(42.dp)
+                    .background(
+                        color = Color.Black
+                    )
+                    .padding(horizontal = 12.dp)
+                    .zIndex(4f)
+            ) {
+                Text(
+                    texto,
+                    fontFamily = quickSandBold,
+                    fontSize = 24.sp,
+                    color = if (isValido) {
+                        colorResource(R.color.verde_escuro) }
+                    else colorResource(R.color.azul_escuro),
+                    modifier = Modifier.align(Alignment.Center)
+                )
+            }
+            LaunchedEffect(true) {
+                delay(2000L)
+                texto = "Documento válido!"
+                isValido = true
+            }
+
+        }
+    else {
+        texto = "Validando..."
+        isValido = false
     }
 }
 
