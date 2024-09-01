@@ -1,12 +1,11 @@
-package br.com.fiap.myapp.ui.theme
+package br.com.fiap.validoc.ui.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
-import br.com.fiap.myapp.R
+import br.com.fiap.validoc.R
 
 val quickSandRegular = FontFamily(Font(R.font.quicksand_regular))
 val quickSandSemibold = FontFamily(Font(R.font.quicksand_semibold))

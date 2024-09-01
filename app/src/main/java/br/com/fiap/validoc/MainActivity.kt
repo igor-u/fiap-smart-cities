@@ -1,4 +1,4 @@
-package br.com.fiap.myapp
+package br.com.fiap.validoc
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -8,20 +8,20 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
-import br.com.fiap.myapp.ui.theme.MyAppTheme
+import br.com.fiap.validoc.ui.theme.ValidocTheme
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import br.com.fiap.myapp.screens.CadastroScreen
-import br.com.fiap.myapp.screens.MenuScreen
-import br.com.fiap.myapp.screens.StartingScreen
+import br.com.fiap.validoc.screens.CadastroScreen
+import br.com.fiap.validoc.screens.MenuScreen
+import br.com.fiap.validoc.screens.StartingScreen
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            MyAppTheme {
+            ValidocTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background

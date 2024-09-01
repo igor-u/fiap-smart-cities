@@ -1,4 +1,4 @@
-package br.com.fiap.myapp.ui.theme
+package br.com.fiap.validoc.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

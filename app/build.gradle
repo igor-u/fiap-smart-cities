@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace 'br.com.fiap.myapp'
+    namespace 'br.com.fiap.validoc'
     compileSdk 34
 
     defaultConfig {
-        applicationId "br.com.fiap.myapp"
+        applicationId "br.com.fiap.validoc"
         minSdk 27
         targetSdk 34
         versionCode 1

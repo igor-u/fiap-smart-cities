@@ -1,4 +1,4 @@
-package br.com.fiap.myapp.service
+package br.com.fiap.validoc.service
 
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory

@@ -1,4 +1,4 @@
-package br.com.fiap.myapp.screens
+package br.com.fiap.validoc.screens
 
 import android.util.Log
 import androidx.compose.foundation.Image
@@ -37,23 +37,24 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
-import br.com.fiap.myapp.ui.theme.MyAppTheme
-import br.com.fiap.myapp.ui.theme.quickSandSemibold
+import br.com.fiap.validoc.ui.theme.ValidocTheme
+import br.com.fiap.validoc.ui.theme.quickSandSemibold
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.navigation.NavController
-import br.com.fiap.myapp.R
-import br.com.fiap.myapp.model.Estado
-import br.com.fiap.myapp.service.RetrofitFactory
+import br.com.fiap.validoc.R
+import br.com.fiap.validoc.model.Cidade
+import br.com.fiap.validoc.model.Estado
+import br.com.fiap.validoc.service.RetrofitFactory
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
 @Composable
 fun CadastroScreen(navController: NavController) {
-    MyAppTheme {
+    ValidocTheme {
 
         Box(
             modifier = Modifier
@@ -81,8 +82,7 @@ fun CadastroScreen(navController: NavController) {
                 "Ícone de olho"
             )
 
-            DropdownEstados("UF")
-            //DropdownCidades("Cidade", idEstadoSelecionado)
+            DropdownCidades(dropdownEstados())
 
             Button(
                 onClick = {
@@ -170,16 +170,16 @@ fun FormBox(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DropdownEstados(nome: String) {
+fun dropdownEstados(): Estado {
 
-    var listaEstadoState by remember { mutableStateOf(listOf<String>()) }
+    var listaEstadoState by remember { mutableStateOf(listOf<Estado>()) }
 
     val call = RetrofitFactory().getLocalidadeService().getEstados()
 
     call.enqueue(object : Callback<List<Estado>> {
         override fun onResponse(call: Call<List<Estado>>, response: Response<List<Estado>>) {
             //Log.i("ValiDoc","onResponse: ${response.body()}")
-            listaEstadoState = response.body()!!.map { it.nome }
+            listaEstadoState = response.body()!!
         }
 
         override fun onFailure(call: Call<List<Estado>>, t: Throwable) {
@@ -188,9 +188,9 @@ fun DropdownEstados(nome: String) {
 
     })
 
-    val list = listaEstadoState.sorted()
+    val list = listaEstadoState.sortedBy { it.nome }
     var isExpanded by remember { mutableStateOf(false) }
-    var estadoSelecionado by remember { mutableStateOf(nome) }
+    var estadoSelecionado by remember { mutableStateOf(Estado()) }
 
     Column(
         modifier = Modifier
@@ -205,18 +205,77 @@ fun DropdownEstados(nome: String) {
 
         OutlinedTextField(
             modifier = Modifier.menuAnchor(),
-            value = estadoSelecionado,
+            value = estadoSelecionado.nome,
             onValueChange = {},
             readOnly = true,
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = isExpanded) },
         )
 
         ExposedDropdownMenu(expanded = isExpanded, onDismissRequest = { isExpanded = false }) {
-            list.forEachIndexed { index, text ->
+            list.forEachIndexed { index, estado ->
                 DropdownMenuItem(
-                    text = { Text(text) },
+                    text = { Text(estado.nome) },
                     onClick = {
                         estadoSelecionado = list[index]
+                        isExpanded = false
+                    },
+                    contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding
+                )
+            }
+        }
+    }
+    return estadoSelecionado
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun DropdownCidades(estadoSelecionado: Estado) {
+
+    var listaCidadeState by remember { mutableStateOf(listOf<Cidade>()) }
+
+    val call = RetrofitFactory().getLocalidadeService().getCidadesByEstado(estadoSelecionado.id)
+
+    call.enqueue(object : Callback<List<Cidade>> {
+        override fun onResponse(call: Call<List<Cidade>>, response: Response<List<Cidade>>) {
+            //Log.i("ValiDoc","onResponse: ${response.body()}")
+            listaCidadeState = response.body()!!
+        }
+
+        override fun onFailure(call: Call<List<Cidade>>, t: Throwable) {
+            Log.i("ValiDoc", "onResponse: ${t.message}")
+        }
+
+    })
+
+    val list = listaCidadeState.sortedBy { it.nome }
+    var isExpanded by remember { mutableStateOf(false) }
+    var cidadeSelecionada by remember { mutableStateOf(Cidade()) }
+
+    Column(
+        modifier = Modifier
+            .padding(top = 40.dp)
+            .fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+
+    }
+
+    ExposedDropdownMenuBox(expanded = isExpanded, onExpandedChange = { isExpanded = !isExpanded }) {
+
+        OutlinedTextField(
+            modifier = Modifier.menuAnchor(),
+            value = cidadeSelecionada.nome,
+            onValueChange = {},
+            readOnly = true,
+            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = isExpanded) },
+        )
+
+        ExposedDropdownMenu(expanded = isExpanded, onDismissRequest = { isExpanded = false }) {
+            list.forEachIndexed { index, cidade ->
+                DropdownMenuItem(
+                    text = { Text(cidade.nome) },
+                    onClick = {
+                        cidadeSelecionada = list[index]
                         isExpanded = false
                     },
                     contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding

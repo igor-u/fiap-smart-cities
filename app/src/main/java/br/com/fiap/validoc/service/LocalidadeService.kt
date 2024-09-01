@@ -1,7 +1,7 @@
-package br.com.fiap.myapp.service
+package br.com.fiap.validoc.service
 
-import br.com.fiap.myapp.model.Cidade
-import br.com.fiap.myapp.model.Estado
+import br.com.fiap.validoc.model.Cidade
+import br.com.fiap.validoc.model.Estado
 import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Path

@@ -1,4 +1,4 @@
-package br.com.fiap.myapp
+package br.com.fiap.validoc
 
 import org.junit.Test
 

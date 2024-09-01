@@ -1,4 +1,4 @@
-package br.com.fiap.myapp.screens
+package br.com.fiap.validoc.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -21,14 +21,14 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import br.com.fiap.myapp.ui.theme.MyAppTheme
-import br.com.fiap.myapp.ui.theme.quickSandSemibold
-import br.com.fiap.myapp.R
-import br.com.fiap.myapp.ui.theme.quickSandBold
+import br.com.fiap.validoc.ui.theme.ValidocTheme
+import br.com.fiap.validoc.ui.theme.quickSandSemibold
+import br.com.fiap.validoc.R
+import br.com.fiap.validoc.ui.theme.quickSandBold
 
 @Composable
 fun StartingScreen(navController: NavController) {
-    MyAppTheme {
+    ValidocTheme {
 
         Box(
             modifier = Modifier
